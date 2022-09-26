@@ -1,0 +1,75 @@
+package com.SpringBoot.Student.iementation;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.SpringBoot.Student.entity.Student;
+import com.SpringBoot.Student.repository.StudentRepository;
+import com.SpringBoot.Student.service.StudentService;
+import com.SpringBoot.Student.vo.College;
+import com.SpringBoot.Student.vo.ResponseTemplate;
+
+@Component
+public class StudentImplementation implements StudentService {
+	
+	@Autowired
+	private StudentRepository studentRepo;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+
+	@Override
+	public Student add(Student student) {
+		return studentRepo.save(student);
+	}
+
+	@Override
+	public List<Student> list() {
+		return studentRepo.findAll();
+	}
+
+	@Override
+	public Student searchById(long id) {
+		return studentRepo.findByRollNo(id);
+	}
+
+	@Override
+	public ResponseTemplate studentWithCollege(long studentId) {
+		ResponseTemplate RT = new ResponseTemplate();
+		Student std = studentRepo.findByRollNo(studentId);
+
+		long college_id = std.getCollege_id();
+		College colg = restTemplate.getForObject("http://COLLEGE-SERVICE/college/" + college_id,College.class);
+		RT.setCollege(colg);
+		RT.setStudent(std);
+		return RT;
+	}
+
+	@Override
+	public Student assignCollege(long studentId, long collegeId) {
+		Student std = studentRepo.findByRollNo(studentId);
+		College colg = restTemplate.getForObject("http://COLLEGE-SERVICE/college/" + collegeId,College.class);
+		if (std == null || colg == null) {
+			return null;
+		}
+		std.setCollege_id(collegeId);
+		studentRepo.save(std);
+		return std;
+	}
+
+	@Override
+	public List<Student> getByColgtId(long college_id) {
+		return studentRepo.getByCollegeId(college_id);
+	}
+
+	@Override
+	public List<Student> getStudentByCollegeWithDescAge(long college_id) {
+		return studentRepo.getStudentByCollegeWithDescAge(college_id);
+	}
+	
+
+}

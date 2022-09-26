@@ -1,0 +1,29 @@
+package com.SpringBoot.Student.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.SpringBoot.Student.entity.Student;
+import com.SpringBoot.Student.vo.ResponseTemplate;
+
+@Service
+public interface StudentService {
+	
+	Student add(Student student);
+
+	List<Student> list();
+
+	Student searchById(long rollNo);
+
+	ResponseTemplate studentWithCollege(long studentId);
+
+	Student assignCollege(long studentId, long collegeId);
+
+
+    List<Student> getByStream(String stream);
+	
+	List<Student> getStudentByCollegeWithDescAgeWithStream(String stream);
+	 
+	
+}
